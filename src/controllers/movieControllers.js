@@ -34,7 +34,7 @@ const getMovies = (req, res) => {
       res.json(movies);
     })
     .catch((err) => {
-      console.error(500);
+      console.err(500);
       res.statuts(500).send("Internal Server Error");
     });
 };
