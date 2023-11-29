@@ -1,41 +1,29 @@
 const database = require("../../database");
 
-const movies = [
-  {
-    id: 1,
-    title: "Citizen Kane",
-    director: "Orson Wells",
-    year: "1941",
-    color: false,
-    duration: 120,
-  },
-  {
-    id: 2,
-    title: "The Godfather",
-    director: "Francis Ford Coppola",
-    year: "1972",
-    color: true,
-    duration: 180,
-  },
-  {
-    id: 3,
-    title: "Pulp Fiction",
-    director: "Quentin Tarantino",
-    year: "1994",
-    color: true,
-    duration: 180,
-  },
-];
 const getMovies = (req, res) => {
+  let sql = "select * from movies";
+  const sqlValues = [];
+
+  if (req.query.color) {
+    sql += " where color = ?";
+    sqlValues.push(req.query.color);
+  }
+  if (req.query.max_duration != null) {
+    sql += " where duration <= ?";
+    sqlValues.push(req.query.max_duration);
+  } else if (req.query.max_duration != null) {
+    sql += " where duration <= ?";
+    sqlValues.push(req.query.max_duration);
+  }
+
   database
-    .query("SELECT * FROM movies")
+    .query(sql, sqlValues)
     .then(([movies]) => {
-      console.log(movies);
       res.json(movies);
     })
     .catch((err) => {
-      console.err(500);
-      res.statuts(500).send("Internal Server Error");
+      console.error(err);
+      res.statuts(500).send("Error retrieving data from database");
     });
 };
 const updateMovieById = (req, res) => {

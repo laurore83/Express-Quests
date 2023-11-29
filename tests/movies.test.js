@@ -67,7 +67,7 @@ describe("POST /api/movies", () => {
     expect(typeof movieInDatabase.duration).toBe("number");
 
     expect(movieInDatabase).toHaveProperty("color");
-    expect(typeof movieInDatabase.color).toBe("string");
+    expect(typeof movieInDatabase.color).toBe("bool");
   });
 
   it("should return an error", async () => {
