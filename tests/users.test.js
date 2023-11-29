@@ -3,6 +3,8 @@ const crypto = require("node:crypto");
 const app = require("../src/app");
 const database = require("../database");
 
+afterAll(() => database.end());
+
 describe("GET /api/users", () => {
   it("should return all users", async () => {
     const response = await request(app).get("/api/users");
@@ -76,7 +78,7 @@ describe("POST /api/users", () => {
       .post("/api/users")
       .send(usersWithMissingProps);
 
-    expect(response.status).toEqual(500);
+    expect(response.status).toEqual(422);
   });
 });
 
@@ -140,17 +142,17 @@ describe("PUT /api/users/:id", () => {
   });
 
   it("should return an error", async () => {
-    const movieWithMissingProps = { title: "Harry Potter" };
+    const userWithMissingProps = { title: "Harry Potter" };
 
     const response = await request(app)
-      .put(`/api/movies/1`)
-      .send(movieWithMissingProps);
+      .put(`/api/users/1`)
+      .send(userWithMissingProps);
 
-    expect(response.status).toEqual(500);
+    expect(response.status).toEqual(422);
   });
 
-  it("should return no movie", async () => {
-    const newMovie = {
+  it("should return no user", async () => {
+    const newuser = {
       firstname: "Marie",
       lastname: "Martin",
       email: `${crypto.randomUUID()}@wild.co`,
@@ -158,9 +160,8 @@ describe("PUT /api/users/:id", () => {
       language: "French",
     };
 
-    const response = await request(app).put("/api/movies/0").send(newMovie);
+    const response = await request(app).put("/api/users/0").send(newuser);
 
     expect(response.status).toEqual(404);
   });
 });
-afterAll(() => database.end());
