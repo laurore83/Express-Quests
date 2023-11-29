@@ -165,3 +165,43 @@ describe("PUT /api/users/:id", () => {
     expect(response.status).toEqual(404);
   });
 });
+describe("DELETE /api/users/:id", () => {
+  it("should delete user", async () => {
+    const newUser = {
+      firstname: "lulu",
+      lastname: "James",
+      email: `${crypto.randomUUID()}@wild.co`,
+      city: "NY",
+      language: "italian",
+    };
+
+    const [result] = await database.query(
+      "INSERT INTO users(firstname, lastname, email, city, language) VALUES (?, ?, ?, ?, ?)",
+      [
+        newUser.firstname,
+        newUser.lastname,
+        newUser.email,
+        newUser.city,
+        newUser.language,
+      ]
+    );
+
+    const id = result.insertId;
+
+    const response = await request(app).delete(`/api/users/${id}`);
+
+    expect(response.status).toEqual(204);
+
+    const [user] = await database.query("SELECT * FROM users WHERE id=?", id);
+
+    const [userInDatabase] = user;
+
+    expect(userInDatabase).toBeUndefined();
+  });
+
+  it("should return no user", async () => {
+    const response = await request(app).delete("/api/users/0");
+
+    expect(response.status).toEqual(404);
+  });
+});
